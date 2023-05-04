@@ -53,10 +53,10 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 router.get("/", async function (req, res, next) {
   try {
     // if there are query strings to filter the list, do this instead
-    // if (req.query) {
-    //   const companies = await Company.findFiltered(req.query)
-    //   return res.json({ companies });
-    // }
+    if (req.query) {
+      const companies = await Company.findFiltered(req.query)
+      return res.json({ companies });
+    }
     const companies = await Company.findAll();
     return res.json({ companies });
   } catch (err) {

@@ -61,7 +61,39 @@ class Company {
     return companiesRes.rows;
   }
 
-  
+  /** Get a list of filtered companies
+   * 
+   * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   */
+
+  static async findFiltered(filterBy) {
+    const keys = Object.keys(filterBy);
+    if (keys.length === 0) throw new BadRequestError("No data to filter by");
+    const whereQuery = keys.map(condition => {
+      switch (condition) {
+        case 'minEmployees':
+          return `num_employees > ${filterBy[condition]}`;
+        case 'maxEmployees':
+          return `num_employees < ${filterBy[condition]}`;
+        case 'name':
+          return `LOWER(name) LIKE '%${filterBy[condition].toLowerCase()}%'`;
+        default:
+          throw new BadRequestError(`Invalid filter key: ${condition}`);
+      }
+    });
+
+    const whereClause = whereQuery.join(' AND ')
+    const companiesRes = await db.query(
+          `SELECT handle,
+                  name,
+                  description,
+                  num_employees AS "numEmployees",
+                  logo_url AS "logoUrl"
+           FROM companies
+           WHERE ${whereClause}
+           ORDER BY name`);
+    return companiesRes.rows;
+  }
 
   /** Given a company handle, return data about company.
    *
