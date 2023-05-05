@@ -63,9 +63,10 @@ class Company {
 
   /** Get a list of filtered companies
    * 
-   * Accepts filter parameters for name, minEmployees, and maxEmployees
+   * Accepts Object with filter parameters for name, minEmployees, and maxEmployees 
    * 
-   * Example: GET /companies?minEmployees=500/
+   * Example: GET /companies?minEmployees=500/ 
+   * @param filterBy = {minEmployees: 500}
    * 
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    */
@@ -81,21 +82,24 @@ class Company {
     const whereQuery = keys.map(condition => {
       switch (condition) {
         case 'minEmployees':
-          if ((isNaN(filterBy[condition]) || filterBy[condition].trim() === '')) {
+          const minEmployees = Number(filterBy[condition]);
+          if (isNaN(minEmployees)) {
             throw new BadRequestError("minEmployees must be a number.");
           }
-          return `num_employees >= ${filterBy[condition]}`;
+          return `num_employees >= ${minEmployees}`;
         case 'maxEmployees':
-          if ((isNaN(filterBy[condition]) || filterBy[condition].trim() === '')) {
+          const maxEmployees = Number(filterBy[condition]);
+          if (isNaN(maxEmployees)) {
             throw new BadRequestError("maxEmployees must be a number.");
           }
-          return `num_employees <= ${filterBy[condition]}`;
+          return `num_employees <= ${maxEmployees}`;
         case 'name':
           return `LOWER(name) LIKE '%${filterBy[condition].toLowerCase()}%'`;
         default:
           throw new BadRequestError(`Invalid filter key: ${condition}`);
       }
     });
+    
     
     const whereClause = whereQuery.join(' AND ')
     const companiesRes = await db.query(
