@@ -87,6 +87,51 @@ describe("findAll", function () {
   });
 });
 
+/************************************** findFiltered */
+
+describe("findFiltered", function () {
+  test("min and max employees filter work", async function () {
+    let companies = await Company.findFiltered({minEmployees: 2, maxEmployees: 2});
+    expect(companies).toEqual([
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      }
+    ]);
+  });
+
+  test("maxEmployees throw errors when NaN is passed", async function () {
+    try {
+      await Company.findFiltered({maxEmployees: true});
+    } catch (err) {
+      expect(err.message).toBe("maxEmployees must be a number.");
+    }
+  });
+  test("minEmployees throw errors when NaN is passed", async function () {
+    try {
+      await Company.findFiltered({minEmployees: 'test'});
+    } catch (err) {
+      expect(err.message).toBe("minEmployees must be a number.");
+    }
+  });
+
+  test("name filter works", async function () {
+    let companies = await Company.findFiltered({name: "C2"});
+    expect(companies).toEqual([
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      }
+    ]);
+  });
+});
+
 /************************************** get */
 
 describe("get", function () {
