@@ -67,6 +67,10 @@ class Company {
    */
 
   static async findFiltered(filterBy) {
+    if (filterBy.minEmployees > filterBy.maxEmployees) {
+      throw new BadRequestError("minEmployees cannot be greater than maxEmployees");
+    }
+
     const keys = Object.keys(filterBy);
     if (keys.length === 0) throw new BadRequestError("No data to filter by");
     const whereQuery = keys.map(condition => {
@@ -81,7 +85,7 @@ class Company {
           throw new BadRequestError(`Invalid filter key: ${condition}`);
       }
     });
-
+    
     const whereClause = whereQuery.join(' AND ')
     const companiesRes = await db.query(
           `SELECT handle,
