@@ -63,6 +63,10 @@ class Company {
 
   /** Get a list of filtered companies
    * 
+   * Accepts filter parameters for name, minEmployees, and maxEmployees
+   * 
+   * Example: GET /companies?minEmployees=500/
+   * 
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    */
 
@@ -70,15 +74,22 @@ class Company {
     if (filterBy.minEmployees > filterBy.maxEmployees) {
       throw new BadRequestError("minEmployees cannot be greater than maxEmployees");
     }
-
     const keys = Object.keys(filterBy);
+
     if (keys.length === 0) throw new BadRequestError("No data to filter by");
+
     const whereQuery = keys.map(condition => {
       switch (condition) {
         case 'minEmployees':
-          return `num_employees > ${filterBy[condition]}`;
+          if ((isNaN(filterBy[condition]) || filterBy[condition].trim() === '')) {
+            throw new BadRequestError("minEmployees must be a number.");
+          }
+          return `num_employees >= ${filterBy[condition]}`;
         case 'maxEmployees':
-          return `num_employees < ${filterBy[condition]}`;
+          if ((isNaN(filterBy[condition]) || filterBy[condition].trim() === '')) {
+            throw new BadRequestError("maxEmployees must be a number.");
+          }
+          return `num_employees <= ${filterBy[condition]}`;
         case 'name':
           return `LOWER(name) LIKE '%${filterBy[condition].toLowerCase()}%'`;
         default:
@@ -96,6 +107,7 @@ class Company {
            FROM companies
            WHERE ${whereClause}
            ORDER BY name`);
+    if (!companiesRes.rows) throw new BadRequestError("Filtering error, please double check that all filters are populated.")
     return companiesRes.rows;
   }
 
