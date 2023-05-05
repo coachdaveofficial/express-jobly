@@ -120,6 +120,13 @@ describe("GET /users", function () {
     expect(resp.body).toEqual({
       users: [
         {
+          email: "admin@user.com",
+          firstName: "adminFirst",
+          lastName: "adminLast",
+          username: "admin",
+          isAdmin: true
+        },
+        {
           username: "u1",
           firstName: "U1F",
           lastName: "U1L",
