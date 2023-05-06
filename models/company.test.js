@@ -108,6 +108,7 @@ describe("findFiltered", function () {
       await Company.findFiltered({maxEmployees: true});
     } catch (err) {
       expect(err.message).toBe("maxEmployees must be a number.");
+      expect(err instanceof BadRequestError).toBeTruthy();
     }
   });
   test("minEmployees throw errors when NaN is passed", async function () {
