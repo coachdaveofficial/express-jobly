@@ -342,4 +342,29 @@ describe("DELETE /users/:username", function () {
         .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
+
+});
+
+/************************************** POST /users/:username/jobs/:id */
+describe("POST /users/:username/jobs/:id", () => {
+  test("works", async () => {
+    const resp = await request(app)
+          .post(`/users/u1/jobs/1`)
+          .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(201);
+    expect(resp.body).toEqual({applied: 1})
+    
+  })
+
+  test("error when invalid username provided", async () => {
+    const resp = await request(app)
+          .post(`/users/invalid/jobs/1`)
+          .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(404);
+    expect(resp.body).toEqual({error: {
+                                    "message": "No user with username: invalid",
+                                    "status": 404
+                                  }})
+    
+  })
 });

@@ -228,3 +228,33 @@ describe("remove", function () {
     }
   });
 });
+
+/*************************************** apply to job */
+
+describe("apply to job", () => {
+  test("works", async () => {
+    let jobApp = await User.applyToJob("u1", 1);
+    const res = await db.query("SELECT * FROM applications");
+
+    expect(jobApp).toEqual({"jobId": 1, "username": "u1"});
+    expect(jobApp).toEqual({"jobId": 1, "username": "u1"});
+    expect(res.rowCount).toEqual(1);
+  })
+  test("error when invalid job id", async () => {
+    try {
+      await User.applyToJob("u1", 10000);
+      const res = await db.query("SELECT * FROM applications");
+    } catch (err) {
+      expect(err.message).toEqual("No job with id: 10000")
+    }
+  })
+
+  test("error when invalid username", async () => {
+    try {
+      await User.applyToJob("invalid", 1);
+      const res = await db.query("SELECT * FROM applications");
+    } catch (err) {
+      expect(err.message).toEqual("No user with username: invalid")
+    }
+  })
+})
