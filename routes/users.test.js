@@ -367,4 +367,16 @@ describe("POST /users/:username/jobs/:id", () => {
                                   }})
     
   })
+
+  test("error when not logged in", async () => {
+    const resp = await request(app)
+          .post(`/users/u1/jobs/1`);
+
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.body).toEqual({error: {
+                                    "message": "Unauthorized",
+                                    "status": 401
+                                  }})
+    
+  })
 });
