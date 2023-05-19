@@ -7,7 +7,8 @@ const { BadRequestError } = require("../expressError");
   * 
   * 
   * @param jsToSql  {Object} {firstName = "first_name"} 
-  * The jsToSql will help turn data in JavaScript syntax to more database friendly syntax
+  * The jsToSql will help turn data in JavaScript syntax to more database friendly syntax. 
+  * It will ultimately end up with this: ['"first_name"=$1', '"age"=$2']
   * 
   * 
   * 

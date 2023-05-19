@@ -71,27 +71,30 @@ class Job {
 
 
     const whereQuery = keys.map(condition => {
-      switch (condition) {
-        case 'minSalary':
-          const minSalary = Number(filterBy[condition]);
-          if (isNaN(minSalary)) {
-            throw new BadRequestError("minSalary must be a number.");
-          }
-          return `salary >= ${minSalary}`;
 
-        // hasEquity: if true, filter to jobs that provide a non-zero amount of equity. 
-        // If false or not included in the filtering, list all jobs regardless of equity.
-        case 'hasEquity':
-          const hasEquity = filterBy[condition];
-          if (hasEquity === true) {
-            return `equity > 0`;
-          }
-          
-        case 'title':
-          return `LOWER(title) LIKE '%${filterBy[condition].toLowerCase()}%'`;
-        default:
-          throw new BadRequestError(`Invalid filter key: ${condition}`);
+      if (condition =='minSalary') {
+        const minSalary = Number(filterBy[condition]);
+        if (isNaN(minSalary)) {
+          throw new BadRequestError("minSalary must be a number.");
+        }
+        return `salary >= ${minSalary}`;
       }
+        
+      // hasEquity: if true, filter to jobs that provide a non-zero amount of equity. 
+      // If false or not included in the filtering, list all jobs regardless of equity.
+      if (condition == 'hasEquity') {
+        const hasEquity = filterBy[condition];
+        if (hasEquity === true) {
+          return `equity > 0`;
+        }
+      }
+        
+      if (condition == 'title') {
+        return `LOWER(title) LIKE '%${filterBy[condition].toLowerCase()}%'`;
+      }
+        
+      throw new BadRequestError(`Invalid filter key: ${condition}`);
+      
     });
     
     
